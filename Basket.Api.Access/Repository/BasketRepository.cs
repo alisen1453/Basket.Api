@@ -1,0 +1,62 @@
+﻿using Basket.Api.Access.Context;
+using Basket.Api.Core.Abstract;
+using Basket.Api.Entities.Entity;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Basket.Api.Access.Repository
+{
+    public class BasketRepository<TEntity> : IRepository<TEntity> where TEntity : class, IEntity
+    {
+        private readonly BasketDbContext _context;
+        private readonly DbSet<TEntity> _dbSet;
+
+        public BasketRepository(BasketDbContext context)
+        {
+            _context = context;
+            _dbSet = context.Set<TEntity>();
+        }
+        public async Task AddAsync(TEntity entity)
+        {
+          await _dbSet.AddAsync(entity);
+
+         _context.SaveChanges();
+         
+        }
+        public async Task AddRangeAsync(IEnumerable<TEntity> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            _dbSet.Remove(entity);
+        }
+
+        public async Task<TEntity> GetAsync(int id)
+        {
+            return await _dbSet.FindAsync(id);
+           
+        }
+
+        public async Task<int> Save()
+        {
+           return await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(TEntity entity)
+        {
+            
+          _dbSet.Update(entity);
+
+            
+
+        }
+
+    }
+}

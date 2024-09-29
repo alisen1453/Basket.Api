@@ -9,8 +9,9 @@ namespace Basket.Api.Core.Abstract
     public interface IRepository<TEntity> : IEntity where TEntity :class, IEntity
     {
         Task AddRangeAsync(IEnumerable<TEntity> entities);
+        Task GetAll(List<TEntity> entity);
         Task AddAsync(TEntity entity);
-        Task<TEntity> GetAsync(int id);
+        Task<TEntity> GetById(Guid id);
         Task UpdateAsync(TEntity entity);
         Task DeleteAsync(int id);
         Task<int> Save();

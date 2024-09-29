@@ -32,16 +32,26 @@ namespace Basket.Api.Access.Repository
             await _dbSet.AddRangeAsync(entities);
         }
 
+        public async Task GetAll(List<TEntity> entity)
+        {
+            await _dbSet.ToListAsync();
+
+        }
+
         public async Task DeleteAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
             _dbSet.Remove(entity);
         }
 
-        public async Task<TEntity> GetAsync(int id)
+        public async Task<TEntity> GetById(Guid id)
         {
-            return await _dbSet.FindAsync(id);
-           
+          
+          var data= await _dbSet.FindAsync(id);
+            return data;
+            
+            
+
         }
 
         public async Task<int> Save()

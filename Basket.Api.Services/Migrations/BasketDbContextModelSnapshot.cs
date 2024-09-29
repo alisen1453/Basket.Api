@@ -44,16 +44,10 @@ namespace Basket.Api.Services.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("BasketCartId")
+                    b.Property<Guid>("BasketId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("BasketId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("ProductId1")
+                    b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("Quantity")
@@ -61,9 +55,9 @@ namespace Basket.Api.Services.Migrations
 
                     b.HasKey("BasketItemId");
 
-                    b.HasIndex("BasketCartId");
+                    b.HasIndex("BasketId");
 
-                    b.HasIndex("ProductId1");
+                    b.HasIndex("ProductId");
 
                     b.ToTable("BasketItems");
                 });
@@ -177,12 +171,16 @@ namespace Basket.Api.Services.Migrations
             modelBuilder.Entity("Basket.Api.Entities.Entity.BasketItem", b =>
                 {
                     b.HasOne("Basket.Api.Entities.Entity.BasketCart", "Basket")
-                        .WithMany("BasketItems")
-                        .HasForeignKey("BasketCartId");
+                        .WithMany("CartItems")
+                        .HasForeignKey("BasketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Basket.Api.Entities.Entity.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductId1");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Basket");
 
@@ -219,7 +217,7 @@ namespace Basket.Api.Services.Migrations
 
             modelBuilder.Entity("Basket.Api.Entities.Entity.BasketCart", b =>
                 {
-                    b.Navigation("BasketItems");
+                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("Basket.Api.Entities.Entity.Customer", b =>

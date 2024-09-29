@@ -12,6 +12,6 @@ namespace Basket.Api.Entities.Entity
         public Guid BasketCartId { get; set; }
         public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
-        public List<BasketItem>? BasketItems { get; set; }
+        public List<BasketItem> CartItems { get; set; } = new List<BasketItem>();
     }
 }

@@ -82,25 +82,25 @@ namespace Basket.Api.Services.Migrations
                 columns: table => new
                 {
                     BasketItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    BasketId = table.Column<int>(type: "int", nullable: false),
-                    BasketCartId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    ProductId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    BasketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Quantity = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BasketItems", x => x.BasketItemId);
                     table.ForeignKey(
-                        name: "FK_BasketItems_BasketCarts_BasketCartId",
-                        column: x => x.BasketCartId,
+                        name: "FK_BasketItems_BasketCarts_BasketId",
+                        column: x => x.BasketId,
                         principalTable: "BasketCarts",
-                        principalColumn: "BasketCartId");
+                        principalColumn: "BasketCartId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BasketItems_Products_ProductId1",
-                        column: x => x.ProductId1,
+                        name: "FK_BasketItems_Products_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Products",
-                        principalColumn: "ProductId");
+                        principalColumn: "ProductId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -136,14 +136,14 @@ namespace Basket.Api.Services.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BasketItems_BasketCartId",
+                name: "IX_BasketItems_BasketId",
                 table: "BasketItems",
-                column: "BasketCartId");
+                column: "BasketId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BasketItems_ProductId1",
+                name: "IX_BasketItems_ProductId",
                 table: "BasketItems",
-                column: "ProductId1");
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_OrderId1",

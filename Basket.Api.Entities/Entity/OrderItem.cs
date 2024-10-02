@@ -17,7 +17,7 @@ namespace Basket.Api.Entities.Entity
         public Guid ProductId { get; set; } // Ürünün kimliği.
         public Product? Product { get; set; } // Sipariş edilen ürün bilgisi.
 
-        public Guid Quantity { get; set; } // Sipariş edilen ürün miktarı.
+        public int Quantity { get; set; } // Sipariş edilen ürün miktarı.
         public decimal UnitPrice { get; set; } // Ürünün birim fiyatı.
     }
 }

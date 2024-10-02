@@ -19,6 +19,6 @@ namespace Basket.Api.Entities.Entity
         public string? Email { get; set; } // Müşterinin e-posta adresi.
 
         public List<Order>? Orders { get; set; } // Müşterinin yaptığı siparişler.
-        public List<BasketCart>? Baskets { get; set; } // Müşterinin sahip olduğu sepetler.
+        public BasketCart? Baskets { get; set; } // Müşterinin sahip olduğu sepetler.
     }
 }

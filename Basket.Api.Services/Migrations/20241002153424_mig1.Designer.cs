@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Basket.Api.Services.Migrations
 {
     [DbContext(typeof(BasketDbContext))]
-    [Migration("20240929181957_Mig1")]
-    partial class Mig1
+    [Migration("20241002153424_mig1")]
+    partial class mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,7 +36,8 @@ namespace Basket.Api.Services.Migrations
 
                     b.HasKey("BasketCartId");
 
-                    b.HasIndex("CustomerId");
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
 
                     b.ToTable("BasketCarts");
                 });
@@ -44,7 +45,6 @@ namespace Basket.Api.Services.Migrations
             modelBuilder.Entity("Basket.Api.Entities.Entity.BasketItem", b =>
                 {
                     b.Property<Guid>("BasketItemId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("BasketId")
@@ -53,12 +53,10 @@ namespace Basket.Api.Services.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Quantity")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.HasKey("BasketItemId");
-
-                    b.HasIndex("BasketId");
 
                     b.HasIndex("ProductId");
 
@@ -123,8 +121,8 @@ namespace Basket.Api.Services.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("Quantity")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
@@ -163,8 +161,8 @@ namespace Basket.Api.Services.Migrations
             modelBuilder.Entity("Basket.Api.Entities.Entity.BasketCart", b =>
                 {
                     b.HasOne("Basket.Api.Entities.Entity.Customer", "Customer")
-                        .WithMany("Baskets")
-                        .HasForeignKey("CustomerId")
+                        .WithOne("Baskets")
+                        .HasForeignKey("Basket.Api.Entities.Entity.BasketCart", "CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -173,9 +171,9 @@ namespace Basket.Api.Services.Migrations
 
             modelBuilder.Entity("Basket.Api.Entities.Entity.BasketItem", b =>
                 {
-                    b.HasOne("Basket.Api.Entities.Entity.BasketCart", "Basket")
+                    b.HasOne("Basket.Api.Entities.Entity.BasketCart", "BasketCart")
                         .WithMany("CartItems")
-                        .HasForeignKey("BasketId")
+                        .HasForeignKey("BasketItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -185,7 +183,7 @@ namespace Basket.Api.Services.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Basket");
+                    b.Navigation("BasketCart");
 
                     b.Navigation("Product");
                 });

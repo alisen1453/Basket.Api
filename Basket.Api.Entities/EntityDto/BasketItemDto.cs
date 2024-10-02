@@ -11,11 +11,11 @@ namespace Basket.Api.Entities.EntityDto
     {
         
 
-        public Guid BasketId { get; set; } // Sepetin kimliği.
+        //public Guid BasketId { get; set; } // Sepetin kimliği.
 
         public Guid ProductId { get; set; } // Ürünün kimliği.
 
-        public Guid Quantity { get; set; } // Sepete eklenen ürünün miktarı.
+        public int Quantity { get; set; } // Sepete eklenen ürünün miktarı.
         public Guid CustomerId { get; set; }
     }
 }

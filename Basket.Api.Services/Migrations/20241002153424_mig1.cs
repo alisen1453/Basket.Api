@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Basket.Api.Services.Migrations
 {
     /// <inheritdoc />
-    public partial class Mig1 : Migration
+    public partial class mig1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -84,14 +84,14 @@ namespace Basket.Api.Services.Migrations
                     BasketItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     BasketId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Quantity = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    Quantity = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BasketItems", x => x.BasketItemId);
                     table.ForeignKey(
-                        name: "FK_BasketItems_BasketCarts_BasketId",
-                        column: x => x.BasketId,
+                        name: "FK_BasketItems_BasketCarts_BasketItemId",
+                        column: x => x.BasketItemId,
                         principalTable: "BasketCarts",
                         principalColumn: "BasketCartId",
                         onDelete: ReferentialAction.Cascade);
@@ -111,7 +111,7 @@ namespace Basket.Api.Services.Migrations
                     OrderId = table.Column<int>(type: "int", nullable: false),
                     OrderId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Quantity = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
                     UnitPrice = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false)
                 },
                 constraints: table =>
@@ -133,12 +133,8 @@ namespace Basket.Api.Services.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_BasketCarts_CustomerId",
                 table: "BasketCarts",
-                column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BasketItems_BasketId",
-                table: "BasketItems",
-                column: "BasketId");
+                column: "CustomerId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_BasketItems_ProductId",

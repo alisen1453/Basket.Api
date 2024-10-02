@@ -1,4 +1,5 @@
-﻿using Basket.Api.Bussiness.Abstract;
+﻿using Azure;
+using Basket.Api.Bussiness.Abstract;
 using Basket.Api.Core.Abstract;
 using Basket.Api.Entities.Entity;
 using Basket.Api.Entities.EntityDto;
@@ -14,57 +15,60 @@ using System.Xml;
 
 namespace Basket.Api.Bussiness.Services
 {
-    public class BasketCartServices:IBasketCartServices
+    public class BasketCartServices : IBasketCartServices
     {
-        private readonly IRepository<BasketCart> _cart;
-        private readonly IRepository<Customer> _customer;
-        private readonly IRepository<BasketItem> _Item;
+        private readonly IRepository<BasketCart> _cartrepository;
+        private readonly IRepository<Customer> _customerrepository;
+        private readonly IRepository<BasketItem> _Itemrepository;
 
-        public BasketCartServices(IRepository<BasketCart> cart, IRepository<Customer> customer
-            , IRepository<BasketItem> Item)
+        public BasketCartServices(IRepository<BasketCart> cartrepository, IRepository<Customer> customerrepository, IRepository<BasketItem> ıtemrepository)
         {
-            _cart = cart;
-            _customer = customer;
-           _Item = Item;
+            _cartrepository = cartrepository;
+            _customerrepository = customerrepository;
+            _Itemrepository = ıtemrepository;
         }
-        public async Task<bool> AddCartOrGetCart(BasketItemDto item)
+
+        public async Task<ApiResponse<BasketCart>> AddCartOrGetCart(BasketItemDto item)
         {
-
-            var entity = await _cart.GetById(item.CustomerId);
-            if (entity == null)
+            // Check if the customer exists
+            var customerExists = await _cartrepository.Query().AnyAsync(c => c.CustomerId == item.CustomerId);
+            if (!customerExists)
             {
-                var add = new BasketCart() { CustomerId = item.CustomerId };
-
-                await _cart.AddAsync(add);
+                return new ApiResponse<BasketCart>(400, null, new List<string> { "Customer does not exist." });
             }
 
+            var entity = await _cartrepository.Query()
+                .Include(x => x.BasketItems)
+                .FirstOrDefaultAsync(x => x.CustomerId == item.CustomerId);
+            if (entity == null)
+            {
+                entity = new BasketCart { CustomerId = item.CustomerId };
+                await _cartrepository.AddAsync(entity);
+            }
+            var data = _Itemrepository.Query().Where(x => x.Quantity > 0 && x.ProductId == item.ProductId).FirstOrDefaultAsync();
+            if (data==null)
+            {
+                return new ApiResponse<BasketCart>(400, null, new List<string> { "Üründen Stokta bulunmamaktadır.." });
+            }
+            
 
-                return await Task.FromResult(true); 
+                if (entity.BasketItems.Any(x => x.ProductId == item.ProductId))
+                {
+                    return new ApiResponse<BasketCart>(400, null, new List<string> { "Item already exists in the cart." });
+                }
+                else
+                {
+
+                    entity.BasketItems.Add(new BasketItem
+                    {
+                        BasketId = entity.BasketCartId,
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity
+                    });
+                    
+                    return new ApiResponse<BasketCart>(200, entity, new List<string> { "Item added to cart successfully." });
+                }
+            
         }
-
-       
-        
-        //        if (entity == null)
-        //        {
-        //            var add = new BasketCart() { CustomerId = CustomerId };
-
-        //            await _cart.AddAsync(add);
-
-        //        var Item= await _Item.GetById(CustomerId);
-        //        if(Item == null)
-        //        {
-        //            var add2 = new BasketItem()
-        //            {
-
-        //            };
-        //        }
-
-        //        }//Kullanıcı Sepeti yoksasepet ekler.
-
-
-
-
-        //}
-
     }
 }

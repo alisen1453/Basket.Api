@@ -39,27 +39,23 @@ namespace Basket.Api.Access.Context
                 .Property(p => p.Price)
                 .HasPrecision(18, 2); // 18 basamak, virgülden sonra 2 basamak
 
+            modelBuilder.Entity<Customer>()
+            .HasOne(c => c.Baskets)
+            .WithOne(cart => cart.Customer)
+            .HasForeignKey<BasketCart>(cart => cart.CustomerId);
+
+            // Cart ve CartItem arasındaki bire çok ilişkiyi ayarla
             modelBuilder.Entity<BasketItem>()
-            .HasOne(ci => ci.Product)
-            .WithMany()
-            .HasForeignKey(ci => ci.ProductId);
+                .HasOne(ci => ci.BasketCart)
+                .WithMany(c => c.BasketItems)
+                .HasForeignKey(ci => ci.BasketItemId);
 
-            modelBuilder.Entity<BasketCart>()
-                .HasMany(sc => sc.CartItems)
-                .WithOne();
-             modelBuilder.Entity<BasketCart>()
-            .HasMany(b => b.CartItems)
-            .WithOne(bi => bi.Basket)
-            .HasForeignKey(bi => bi.BasketId) // Specify the foreign key here
-            .OnDelete(DeleteBehavior.Cascade); // Configure delete behavior as needed
+            // Product ve CartItem arasındaki bire çok ilişkiyi ayarla
 
-        // If you have another relationship, configure it explicitly as well
-        //modelBuilder.Entity<BasketItem>()
-        //    .HasOne(bi => bi.Ba) // Specify the navigation property
-        //    .WithMany(bc => bc.BasketItems) // Specify the inverse navigation property
-        //    .HasForeignKey(bi => bi.AnotherBasketId);
-
-
+            modelBuilder.Entity<BasketItem>()
+       .HasOne(bi => bi.Product)
+       .WithMany()
+       .HasForeignKey(bi => bi.ProductId);
 
         }
 

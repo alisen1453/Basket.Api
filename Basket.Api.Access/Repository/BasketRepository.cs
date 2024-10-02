@@ -20,6 +20,13 @@ namespace Basket.Api.Access.Repository
             _context = context;
             _dbSet = context.Set<TEntity>();
         }
+
+        public IQueryable<TEntity> Query()
+        {
+            return _dbSet.AsQueryable();
+            
+        }
+
         public async Task AddAsync(TEntity entity)
         {
           await _dbSet.AddAsync(entity);
@@ -49,8 +56,6 @@ namespace Basket.Api.Access.Repository
           
           var data= await _dbSet.FindAsync(id);
             return data;
-            
-            
 
         }
 
@@ -64,9 +69,8 @@ namespace Basket.Api.Access.Repository
             
           _dbSet.Update(entity);
 
-            
-
         }
 
+      
     }
 }

@@ -28,12 +28,9 @@ namespace Basket.Api.Services.Controllers
 
             var result = await _CartServices.AddCartOrGetCart(item);
 
-            if (!result)
-            {
-                return StatusCode(500, "Sepete ekleme işlemi başarısız oldu.");
-            }
+            
 
-            return Ok("Sepete başarıyla eklendi.");
+            return Ok(result);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Basket.Api.Entities.Entity;
+﻿using Azure;
+using Basket.Api.Entities.Entity;
 using Basket.Api.Entities.EntityDto;
 using FreeDemoCatalog.Entities;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -12,6 +13,6 @@ namespace Basket.Api.Bussiness.Abstract
 {
     public interface IBasketCartServices
     {
-        Task<bool> AddCartOrGetCart(BasketItemDto item);
+        Task<ApiResponse<BasketCart>> AddCartOrGetCart(BasketItemDto item);
     }
 }

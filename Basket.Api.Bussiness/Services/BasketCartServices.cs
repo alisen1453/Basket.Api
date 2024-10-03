@@ -20,55 +20,115 @@ namespace Basket.Api.Bussiness.Services
         private readonly IRepository<BasketCart> _cartrepository;
         private readonly IRepository<Customer> _customerrepository;
         private readonly IRepository<BasketItem> _Itemrepository;
+        private readonly IRepository<Product> _productrepository;
 
-        public BasketCartServices(IRepository<BasketCart> cartrepository, IRepository<Customer> customerrepository, IRepository<BasketItem> ıtemrepository)
+        public BasketCartServices(IRepository<BasketCart> cartrepository, IRepository<Customer> customerrepository,
+            IRepository<BasketItem> ıtemrepository, IRepository<Product> productrepository)
         {
             _cartrepository = cartrepository;
             _customerrepository = customerrepository;
             _Itemrepository = ıtemrepository;
+            _productrepository=productrepository;
         }
 
-        public async Task<ApiResponse<BasketCart>> AddCartOrGetCart(BasketItemDto item)
+        public async Task<ApiResponse<BasketCart>> AddCartOrGetCart(BasketItemDto item, bool isAdding = true)
         {
-            // Check if the customer exists
-            var customerExists = await _cartrepository.Query().AnyAsync(c => c.CustomerId == item.CustomerId);
+            // Müşterinin var olup olmadığını kontrol et
+            var customerExists = await _customerrepository.Query().AnyAsync(c => c.CostumerId == item.CustomerId);
+
             if (!customerExists)
             {
-                return new ApiResponse<BasketCart>(400, null, new List<string> { "Customer does not exist." });
+                return new ApiResponse<BasketCart>(400, null, new List<string> { "Müşteri bulunamadı." });
             }
 
+            // Mevcut sepeti bul veya yeni bir sepet oluştur
             var entity = await _cartrepository.Query()
                 .Include(x => x.BasketItems)
                 .FirstOrDefaultAsync(x => x.CustomerId == item.CustomerId);
+
             if (entity == null)
             {
                 entity = new BasketCart { CustomerId = item.CustomerId };
                 await _cartrepository.AddAsync(entity);
             }
-            var data = _Itemrepository.Query().Where(x => x.Quantity > 0 && x.ProductId == item.ProductId).FirstOrDefaultAsync();
-            if (data==null)
-            {
-                return new ApiResponse<BasketCart>(400, null, new List<string> { "Üründen Stokta bulunmamaktadır.." });
-            }
-            
 
-                if (entity.BasketItems.Any(x => x.ProductId == item.ProductId))
+            // Sepette aynı ürünün olup olmadığını kontrol et
+            var existingItem = entity.BasketItems.FirstOrDefault(x => x.ProductId == item.ProductId);
+
+            // Ürün zaten sepetteyse
+            if (existingItem != null)
+            {
+                if (isAdding)
                 {
-                    return new ApiResponse<BasketCart>(400, null, new List<string> { "Item already exists in the cart." });
+                    // Ürün miktarını artır
+                    existingItem.Quantity += item.Quantity;
+                    var product = await _productrepository.Query().FirstOrDefaultAsync(p => p.ProductId == item.ProductId);
+                    if (product != null)
+                    {
+                        product.StockQuantity -= item.Quantity;
+                        await _productrepository.UpdateAsync(product);
+                    }
+                    await _cartrepository.UpdateAsync(entity);
+                    
+
+                    return new ApiResponse<BasketCart>(200, entity, new List<string> { "Ürün sepete eklendi." });
                 }
                 else
                 {
-
-                    entity.BasketItems.Add(new BasketItem
+                    // Ürün miktarını azalt
+                    existingItem.Quantity -= item.Quantity;
+                    var product = await _productrepository.Query().FirstOrDefaultAsync(p => p.ProductId == item.ProductId);
+                    if (product != null)
                     {
-                        BasketId = entity.BasketCartId,
-                        ProductId = item.ProductId,
-                        Quantity = item.Quantity
-                    });
-                    
-                    return new ApiResponse<BasketCart>(200, entity, new List<string> { "Item added to cart successfully." });
+                        product.StockQuantity += item.Quantity;
+                        await _productrepository.UpdateAsync(product);
+                    }
+
+                    // Miktar sıfır veya daha az ise ürünü sepetten çıkar
+                    if (existingItem.Quantity <= 0)
+                    {
+                        entity.BasketItems.Remove(existingItem);
+                    }
+
+                    await _cartrepository.UpdateAsync(entity);
+                    return new ApiResponse<BasketCart>(200, entity, new List<string> { "Ürün sepetten eksiltildi." });
                 }
-            
+            }
+
+            // Sepette ürün yoksa ve eksiltme işlemi yapılmak isteniyorsa hata döndür
+            if (!isAdding)
+            {
+                return new ApiResponse<BasketCart>(400, null, new List<string> { "Ürün sepetinizde bulunmamaktadır." });
+            }
+
+            // Stok kontrolü
+            var matchingProduct = await _productrepository.Query()
+                .Where(p => p.StockQuantity > 0)
+                .FirstOrDefaultAsync(p => p.ProductId == item.ProductId);
+
+            if (matchingProduct == null)
+            {
+                return new ApiResponse<BasketCart>(400, null, new List<string> { "Üründen stokta bulunmamaktadır." });
+            }
+
+            // Ürün sepete ekleniyor
+            entity.BasketItems.Add(new BasketItem
+            {
+                BasketItemId = entity.BasketCartId,
+                BasketId = entity.BasketCartId,
+                ProductId = item.ProductId,
+                Quantity = item.Quantity
+            });
+            var product1 = await _productrepository.Query().FirstOrDefaultAsync(p => p.ProductId == item.ProductId);
+            if (product1 != null)
+            {
+                product1.StockQuantity -= item.Quantity;
+                await _productrepository.UpdateAsync(product1);
+            }
+
+            await _cartrepository.UpdateAsync(entity);
+            return new ApiResponse<BasketCart>(200, entity, new List<string> { "Ürünler sepete eklendi." });
         }
+
     }
 }

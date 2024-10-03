@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Basket.Api.Entities.Entity
@@ -15,6 +16,7 @@ namespace Basket.Api.Entities.Entity
         public Order? Order { get; set; } // Sipariş bilgisi.
 
         public Guid ProductId { get; set; } // Ürünün kimliği.
+        [JsonIgnore]
         public Product? Product { get; set; } // Sipariş edilen ürün bilgisi.
 
         public int Quantity { get; set; } // Sipariş edilen ürün miktarı.

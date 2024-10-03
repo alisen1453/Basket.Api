@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Basket.Api.Entities.Entity
@@ -11,7 +12,9 @@ namespace Basket.Api.Entities.Entity
     {
         public Guid BasketCartId { get; set; }
         public Guid CustomerId { get; set; }
+        [JsonIgnore]
         public Customer? Customer { get; set; }
+       
         public List<BasketItem> BasketItems { get; set; } = new List<BasketItem>();
 
 

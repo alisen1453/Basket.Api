@@ -17,20 +17,42 @@ namespace Basket.Api.Services.Controllers
         {
             _CartServices = ıBasketCartServices;
         }
-        [HttpPost]
-        [Route("api/cart/add")]
-        public async Task<IActionResult> AddCartItem([FromBody] BasketItemDto item)
+
+
+
+        [HttpPost("add")]
+        public async Task<IActionResult> AddToCart([FromBody] BasketItemDto item)
         {
             if (item == null)
             {
-                return BadRequest("Geçersiz veri.");
+                return BadRequest(new { message = "Sepete eklemek için geçerli bir ürün bilgisi sağlanmadı." });
             }
 
-            var result = await _CartServices.AddCartOrGetCart(item);
+            var response = await _CartServices.AddCartOrGetCart(item, true);
 
-            
+            return Ok(response);
 
-            return Ok(result);
         }
+
+        // Sepetten ürün eksiltme işlemi
+        [HttpPost("remove")]
+        public async Task<IActionResult> RemoveFromCart([FromBody] BasketItemDto item)
+        {
+            if (item == null)
+            {
+                return BadRequest(new { message = "Sepetten çıkarmak için geçerli bir ürün bilgisi sağlanmadı." });
+            }
+
+            var response = await _CartServices.AddCartOrGetCart(item, false);
+
+
+            return Ok(response);
+
+        }
+
+
+
+
     }
-}
+
+    }

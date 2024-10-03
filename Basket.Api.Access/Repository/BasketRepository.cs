@@ -68,6 +68,7 @@ namespace Basket.Api.Access.Repository
         {
             
           _dbSet.Update(entity);
+            await _context.SaveChangesAsync();
 
         }
 

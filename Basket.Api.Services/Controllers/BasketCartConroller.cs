@@ -50,7 +50,13 @@ namespace Basket.Api.Services.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetList()
+        {
+          var entity=  await _CartServices.GetItemListAsync() ;
 
+            return Ok(entity);
+        }
 
 
     }

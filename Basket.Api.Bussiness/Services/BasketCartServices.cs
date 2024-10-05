@@ -114,11 +114,12 @@ namespace Basket.Api.Bussiness.Services
             // Ürün sepete ekleniyor
             entity.BasketItems.Add(new BasketItem
             {
-                BasketItemId = entity.BasketCartId,
-                BasketId = entity.BasketCartId,
+                BasketItemId=Guid.NewGuid(),
+                BasketId = Guid.NewGuid(),
                 ProductId = item.ProductId,
                 Quantity = item.Quantity
             });
+         
             var product1 = await _productrepository.Query().FirstOrDefaultAsync(p => p.ProductId == item.ProductId);
             if (product1 != null)
             {
@@ -128,6 +129,13 @@ namespace Basket.Api.Bussiness.Services
 
             await _cartrepository.UpdateAsync(entity);
             return new ApiResponse<BasketCart>(200, entity, new List<string> { "Ürünler sepete eklendi." });
+        }//SepetEkleme
+        public async Task<ApiResponse<IEnumerable<BasketItem>>> GetItemListAsync()
+        {
+            var entity = await _Itemrepository.GetAllAsync();
+
+            return new ApiResponse<IEnumerable<BasketItem>>(200,entity, new List<string> { "Ürünler sepete eklendi." });
+
         }
 
     }

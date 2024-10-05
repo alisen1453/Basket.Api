@@ -22,7 +22,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped(typeof(IRepository<>),typeof(BasketRepository<>));
 builder.Services.AddScoped<IBasketCartServices,BasketCartServices>();
 builder.Services.AddScoped<ICustomerServices, CustomerServices>();
-builder.Services.AddScoped<IBasketItemServices, BasketItemServices>();
+//builder.Services.AddScoped<IBasketItemServices, BasketItemServices>();
 builder.Services.AddScoped<IProductServices, ProductServices>();
 
 var app = builder.Build();

@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Basket.Api.Core.Abstract;
 using Basket.Api.Entities.Entity;
 using Basket.Api.Entities.EntityDto;
 using FreeDemoCatalog.Entities;
@@ -14,5 +15,6 @@ namespace Basket.Api.Bussiness.Abstract
     public interface IBasketCartServices
     {
         Task<ApiResponse<BasketCart>> AddCartOrGetCart(BasketItemDto item, bool isAdding = true);
+        Task<ApiResponse<IEnumerable<BasketItem>>> GetItemListAsync();
     }
 }

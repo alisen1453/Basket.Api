@@ -4,6 +4,7 @@ using Basket.Api.Access.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Basket.Api.Services.Migrations
 {
     [DbContext(typeof(BasketDbContext))]
-    partial class BasketDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241005123221_mig4")]
+    partial class mig4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,7 +45,6 @@ namespace Basket.Api.Services.Migrations
             modelBuilder.Entity("Basket.Api.Entities.Entity.BasketItem", b =>
                 {
                     b.Property<Guid>("BasketItemId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("BasketId")
@@ -55,8 +57,6 @@ namespace Basket.Api.Services.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("BasketItemId");
-
-                    b.HasIndex("BasketId");
 
                     b.HasIndex("ProductId");
 
@@ -173,7 +173,7 @@ namespace Basket.Api.Services.Migrations
                 {
                     b.HasOne("Basket.Api.Entities.Entity.BasketCart", "BasketCart")
                         .WithMany("BasketItems")
-                        .HasForeignKey("BasketId")
+                        .HasForeignKey("BasketItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

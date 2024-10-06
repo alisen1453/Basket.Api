@@ -10,7 +10,7 @@ namespace Basket.Api.Entities.Entity
 {
     public class BasketCart: IEntity
     {
-        public Guid BasketCartId { get; set; }
+        public Guid BasketId { get; set; }
         public Guid CustomerId { get; set; }
         [JsonIgnore]
         public Customer? Customer { get; set; }

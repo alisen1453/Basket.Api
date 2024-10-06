@@ -23,9 +23,9 @@ namespace Basket.Api.Access.Context
         {
             modelBuilder.Entity<Customer>().HasKey(c => c.CostumerId);
 
-           
+
             modelBuilder.Entity<Product>().HasKey(c => c.ProductId);
-            modelBuilder.Entity<BasketCart>().HasKey(c => c.BasketCartId);
+            modelBuilder.Entity<BasketCart>().HasKey(c => c.BasketId);
             modelBuilder.Entity<BasketItem>().HasKey(c => c.BasketItemId);
             modelBuilder.Entity<Order>()
             .Property(o => o.TotalAmount)
@@ -52,10 +52,15 @@ namespace Basket.Api.Access.Context
 
             // Product ve CartItem arasındaki bire çok ilişkiyi ayarla
 
+            //modelBuilder.Entity<BasketItem>()
+            //   .HasOne(bi => bi.Product)
+            //   .WithMany()
+            //   .HasForeignKey(bi => bi.ProductId);
+
             modelBuilder.Entity<BasketItem>()
-       .HasOne(bi => bi.Product)
-       .WithMany()
-       .HasForeignKey(bi => bi.ProductId);
+                .HasOne(bi => bi.BasketCart)
+                .WithMany(b => b.BasketItems)
+                .HasForeignKey(bi => bi.BasketId); modelBuilder.Entity<Order>();
 
         }
 

@@ -26,13 +26,13 @@ namespace Basket.Api.Services.Controllers
             
             if (item == null)
             {
-                return BadRequest("Invalid basket item.");
+                return BadRequest("Geçersiz sepet öğesi.");
             }
 
             try
             {
                 await _CartServices.AddCartOrGetCart(item, true);
-                return Ok(new { message = "Item added to cart successfully.", item });
+                return Ok(new { message = "Item sepete eklendi.", item });
             }
             catch (Exception ex)
             {

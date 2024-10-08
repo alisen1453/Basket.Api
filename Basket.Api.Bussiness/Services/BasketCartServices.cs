@@ -29,41 +29,46 @@ namespace Basket.Api.Bussiness.Services
             _cartrepository = cartrepository;
             _customerrepository = customerrepository;
             _Itemrepository = ıtemrepository;
-            _productrepository=productrepository;
+            _productrepository = productrepository;
         }
 
-        public async Task AddCartOrGetCart(BasketItemDto item,bool entry=true)
+        public async Task AddCartOrGetCart(BasketItemDto item, bool entry = true)
         {
             // Müşterinin var olup olmadığını kontrol et
-          //  var customerExists = await _customerrepository.Query().AnyAsync(c => c.CustomerId == item.CustomerId);
+            //  var customerExists = await _customerrepository.Query().AnyAsync(c => c.CustomerId == item.CustomerId);
 
-          
+
 
             // Mevcut sepeti bul veya yeni bir sepet oluştur
             var entity = await _cartrepository.Query()
                 .Include(x => x.CartItems).ThenInclude(x => x.Product)
                 .FirstOrDefaultAsync(x => x.CustomerId == item.CustomerId);
-            if (entity == null) {
+            if (entity == null)
+            {
 
-                entity=new Cart { CustomerId = item.CustomerId };
-               await _cartrepository.AddAsync(entity);
-            
+                entity = new Cart { CustomerId = item.CustomerId };
+                await _cartrepository.AddAsync(entity);
+
             }
 
 
             var product = await _productrepository.Query().AsTracking().
-                FirstOrDefaultAsync(x => x.ProductId == item.ProductId );//Stok kontrolu.
-            
+                FirstOrDefaultAsync(x => x.ProductId == item.ProductId);//Stok kontrolu.
 
-         if (product != null)
+
+            if (product != null)
             {
-                if (product.Stock <= item.Quantity) { throw new NotFoundException("Stok yetersiz"); }
-                var cartitem=entity.CartItems.FirstOrDefault(x=>x.ProductId == item.ProductId);
-            if (cartitem == null) {
-                //product sorgulama
-             
-                       
-                        //CartItem ürün ekeleme.
+
+                var cartitem = entity.CartItems.FirstOrDefault(x => x.ProductId == item.ProductId);
+                if (cartitem == null)
+                {
+                    //product sorgulama
+
+
+                    //CartItem ürün ekeleme.
+                    if (product.Stock <= item.Quantity) { throw new NotFoundException("Stok yetersiz"); }
+                    else
+                    {
                         entity.CartItems.Add(new CartItem
                         {
                             ProductId = item.ProductId,
@@ -73,20 +78,25 @@ namespace Basket.Api.Bussiness.Services
                         });
                         await _cartrepository.UpdateAsync(entity);
 
-                    product.Stock -= item.Quantity;
-                    await _productrepository.UpdateAsync(product);
+                        product.Stock -= item.Quantity;
+                        await _productrepository.UpdateAsync(product);
+                    }
 
                 }
-            else
-               {
+                else
+                {
+
                     if (entry)
                     {
                         if (product.Stock <= item.Quantity) { throw new NotFoundException("Stok yetersiz"); }
+                        else
+                        {
 
-                        cartitem.Quantity += item.Quantity;
-                        await _cartrepository.UpdateAsync(entity);
-                        product.Stock -= item.Quantity;
-                        await _productrepository.UpdateAsync(product);
+                            cartitem.Quantity += item.Quantity;
+                            await _cartrepository.UpdateAsync(entity);
+                            product.Stock -= item.Quantity;
+                            await _productrepository.UpdateAsync(product);
+                        }
                     }
                     else
                     {
@@ -95,17 +105,9 @@ namespace Basket.Api.Bussiness.Services
                         product.Stock += item.Quantity;
                         await _productrepository.UpdateAsync(product);
                     }
-
+                }
 
             }
-
-         }
-            
-
-
-
-
-
 
         }
 

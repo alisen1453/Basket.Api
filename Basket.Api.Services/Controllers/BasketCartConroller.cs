@@ -24,27 +24,17 @@ namespace Basket.Api.Services.Controllers
         public async Task AddToCart([FromBody] BasketItemDto item)
         {
 
-             await _CartServices.AddCartOrGetCart(item);
+             await _CartServices.AddCartOrGetCart(item,true);
 
             
 
         }
+        [HttpPost("Remove")]
+        public async Task RemoveCartItem(BasketItemDto item)
+        {
+            await _CartServices.AddCartOrGetCart(item, false);
+        }
 
-        // Sepetten ürün eksiltme işlemi
-        //[HttpPost("remove")]
-        //public async Task<IActionResult> RemoveFromCart([FromBody] BasketItemDto item)
-        //{
-        //    if (item == null)
-        //    {
-        //        return BadRequest(new { message = "Sepetten çıkarmak için geçerli bir ürün bilgisi sağlanmadı." });
-        //    }
-
-        //    var response = await _CartServices.AddCartOrGetCart(item, false);
-
-
-        //    return Ok(response);
-
-        //}
 
         //[HttpGet]
         //public async Task<IActionResult> GetList()

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Basket.Api.Services.Migrations
 {
     [DbContext(typeof(BasketDbContext))]
-    [Migration("20241008072621_mig1")]
+    [Migration("20241008145940_mig1")]
     partial class mig1
     {
         /// <inheritdoc />
@@ -63,9 +63,6 @@ namespace Basket.Api.Services.Migrations
                     b.Property<Guid>("ProductId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ProductId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
@@ -74,8 +71,6 @@ namespace Basket.Api.Services.Migrations
                     b.HasIndex("CartId");
 
                     b.HasIndex("ProductId");
-
-                    b.HasIndex("ProductId1");
 
                     b.ToTable("CartItems");
                 });
@@ -152,14 +147,10 @@ namespace Basket.Api.Services.Migrations
                         .IsRequired();
 
                     b.HasOne("Basket.Api.Entities.Entity.Product", "Product")
-                        .WithMany()
+                        .WithMany("CartItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("Basket.Api.Entities.Entity.Product", null)
-                        .WithMany("CartItems")
-                        .HasForeignKey("ProductId1");
 
                     b.Navigation("Cart");
 

@@ -31,7 +31,7 @@ namespace Basket.Api.Bussiness.Services
             _productrepository=productrepository;
         }
 
-        public async Task AddCartOrGetCart(BasketItemDto item)
+        public async Task AddCartOrGetCart(BasketItemDto item,bool entry=true)
         {
             // Müşterinin var olup olmadığını kontrol et
           //  var customerExists = await _customerrepository.Query().AnyAsync(c => c.CustomerId == item.CustomerId);
@@ -77,10 +77,21 @@ namespace Basket.Api.Bussiness.Services
             }
             else
                {
+                    if (entry)
+                    {
+
                         cartitem.Quantity += item.Quantity;
                         await _cartrepository.UpdateAsync(entity);
                         product.Stock -= item.Quantity;
                         await _productrepository.UpdateAsync(product);
+                    }
+                    else
+                    {
+                        cartitem.Quantity -= item.Quantity;
+                        await _cartrepository.UpdateAsync(entity);
+                        product.Stock += item.Quantity;
+                        await _productrepository.UpdateAsync(product);
+                    }
 
 
                 }

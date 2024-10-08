@@ -32,6 +32,8 @@ namespace Basket.Api.Access.Context
                 .HasOne(i => i.Cart)
                 .WithMany(c => c.CartItems)
                 .HasForeignKey(i => i.CartId);
+            modelBuilder.Entity<Product>().Property(c => c.Price)
+                .HasColumnType("decimal(18,2)");
 
           
 

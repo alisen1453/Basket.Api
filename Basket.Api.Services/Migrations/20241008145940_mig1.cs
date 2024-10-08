@@ -72,8 +72,7 @@ namespace Basket.Api.Services.Migrations
                     CartItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     CartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,11 +89,6 @@ namespace Basket.Api.Services.Migrations
                         principalTable: "Products",
                         principalColumn: "ProductId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CartItems_Products_ProductId1",
-                        column: x => x.ProductId1,
-                        principalTable: "Products",
-                        principalColumn: "ProductId");
                 });
 
             migrationBuilder.CreateIndex(
@@ -106,11 +100,6 @@ namespace Basket.Api.Services.Migrations
                 name: "IX_CartItems_ProductId",
                 table: "CartItems",
                 column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CartItems_ProductId1",
-                table: "CartItems",
-                column: "ProductId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Carts_CustomerId",

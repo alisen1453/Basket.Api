@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Basket.Api.Services.Migrations
 {
     [DbContext(typeof(BasketDbContext))]
-    [Migration("20241008081317_mig2")]
+    [Migration("20241008151045_mig2")]
     partial class mig2
     {
         /// <inheritdoc />

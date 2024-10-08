@@ -14,7 +14,7 @@ namespace Basket.Api.Bussiness.Abstract
 {
     public interface IBasketCartServices
     {
-        Task AddCartOrGetCart(BasketItemDto item);
+        Task AddCartOrGetCart(BasketItemDto item,bool entry = true);
         //Task<ApiResponse<IEnumerable<CartItem>>> GetItemListAsync();
     }
 }

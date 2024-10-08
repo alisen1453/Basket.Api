@@ -30,9 +30,11 @@ namespace Basket.Api.Services.Controllers
 
         }
         [HttpPost("Remove")]
-        public async Task RemoveCartItem(BasketItemDto item)
+        public async Task<IActionResult> RemoveCartItem(BasketItemDto item)
         {
             await _CartServices.AddCartOrGetCart(item, false);
+            return Ok(item);
+            
         }
 
 

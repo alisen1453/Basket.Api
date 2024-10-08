@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Basket.Api.Bussiness.Abstract;
 using Basket.Api.Core.Abstract;
+using Basket.Api.Core.Response;
 using Basket.Api.Entities.Entity;
 using Basket.Api.Entities.EntityDto;
 using FreeDemoCatalog.Entities;
@@ -50,18 +51,18 @@ namespace Basket.Api.Bussiness.Services
             }
 
 
-            var product = await _productrepository.Query().
-                FirstOrDefaultAsync(x => x.ProductId == item.ProductId && x.Stock >= item.Quantity);//Stok kontrolu.
+            var product = await _productrepository.Query().AsTracking().
+                FirstOrDefaultAsync(x => x.ProductId == item.ProductId );//Stok kontrolu.
+            
 
-            if (product != null)
+         if (product != null)
             {
-
+                if (product.Stock <= item.Quantity) { throw new NotFoundException("Stok yetersiz"); }
                 var cartitem=entity.CartItems.FirstOrDefault(x=>x.ProductId == item.ProductId);
             if (cartitem == null) {
                 //product sorgulama
              
-                        product.Stock -= item.Quantity;
-                        await _productrepository.UpdateAsync(product);
+                       
                         //CartItem ürün ekeleme.
                         entity.CartItems.Add(new CartItem
                         {
@@ -72,13 +73,15 @@ namespace Basket.Api.Bussiness.Services
                         });
                         await _cartrepository.UpdateAsync(entity);
 
-                
-                
-            }
+                    product.Stock -= item.Quantity;
+                    await _productrepository.UpdateAsync(product);
+
+                }
             else
                {
                     if (entry)
                     {
+                        if (product.Stock <= item.Quantity) { throw new NotFoundException("Stok yetersiz"); }
 
                         cartitem.Quantity += item.Quantity;
                         await _cartrepository.UpdateAsync(entity);
@@ -94,9 +97,11 @@ namespace Basket.Api.Bussiness.Services
                     }
 
 
-                }
-
             }
+
+         }
+            
+
 
 
 

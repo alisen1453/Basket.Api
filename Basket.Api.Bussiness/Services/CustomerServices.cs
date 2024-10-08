@@ -25,8 +25,10 @@ namespace Basket.Api.Bussiness.Services
 
             var customer = new Customer()
             {
-                Name = customerDto.Name,
-                Email = customerDto.Email
+                FirstName= customerDto.FirstName,
+                LastName= customerDto.LastName,
+                Email = customerDto.Email,
+                
             };
 
             await _customerRepository.AddAsync(customer);

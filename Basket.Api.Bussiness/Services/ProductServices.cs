@@ -24,7 +24,8 @@ namespace Basket.Api.Bussiness.Services
             {
                 Name = productDto.Name,
                 Price = productDto.Price,
-                StockQuantity = productDto.StockQuantity,
+                Stock = productDto.Stock,
+                Description = productDto.Description
 
             };
            await _repository.AddAsync(product);

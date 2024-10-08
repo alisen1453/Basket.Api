@@ -8,16 +8,29 @@ using System.Threading.Tasks;
 
 namespace Basket.Api.Entities.Entity
 {
-    public class Product : IEntity
+    public class Product:IEntity
     {
-        public Guid ProductId { get; set; } // Ürünün benzersiz kimliği.
-
         
-        public string? Name { get; set; } // Ürünün adı.
+            public Guid ProductId { get;  set; } 
+            public string Name { get;  set; }
+            public string Description { get;  set; }
+            public decimal Price { get;  set; }
+            public int Stock { get;  set; }
+            public List<CartItem> CartItems { get; set; }
 
-       
-        public decimal Price { get; set; } // Ürünün fiyatı.
+            //public Product(string name, string description, decimal price, int stock)
+            //{
+            //    Name = name;
+            //    Description = description;
+            //    Price = price;
+            //    Stock = stock;
+            //    CartItems = new List<CartItem>();
+            //}
 
-        public int StockQuantity { get; set; } // Mevcut stok miktarı.
+            public void UpdateStock(int newStock)
+            {
+                Stock = newStock;
+            }
+        
     }
 }

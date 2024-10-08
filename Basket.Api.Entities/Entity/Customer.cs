@@ -11,16 +11,22 @@ namespace Basket.Api.Entities.Entity
 {
     public class Customer:IEntity
     {
-        public Guid CostumerId { get; set; } // Müşterinin benzersiz kimliği.
 
-        
-        public string? Name { get; set; } // Müşterinin adı.
+        public Guid CustomerId { get; set; } 
+        public string FirstName { get;  set; }
+        public string LastName { get;  set; }
+        public string Email { get;  set; }
+        public Cart Cart { get;  set; }
+        public List<Cart> Carts { get; set; }
 
-       
-        public string? Email { get; set; } // Müşterinin e-posta adresi.
-
-        public List<Order>? Orders { get; set; } // Müşterinin yaptığı siparişler.
-        [JsonIgnore]
-        public BasketCart? Baskets { get; set; } // Müşterinin sahip olduğu sepetler.
+        //public Customer(string firstName, string lastName, string email)
+        //{
+        //    FirstName = firstName;
+        //    LastName = lastName;
+        //    Email = email;
+        //    Carts = new List<Cart>();
+        //}
     }
+
+
 }

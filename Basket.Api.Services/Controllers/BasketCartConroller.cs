@@ -21,42 +21,38 @@ namespace Basket.Api.Services.Controllers
 
 
         [HttpPost("add")]
-        public async Task<IActionResult> AddToCart([FromBody] BasketItemDto item)
+        public async Task AddToCart([FromBody] BasketItemDto item)
         {
-            if (item == null)
-            {
-                return BadRequest(new { message = "Sepete eklemek için geçerli bir ürün bilgisi sağlanmadı." });
-            }
 
-            var response = await _CartServices.AddCartOrGetCart(item, true);
+             await _CartServices.AddCartOrGetCart(item);
 
-            return Ok(response);
+            
 
         }
 
         // Sepetten ürün eksiltme işlemi
-        [HttpPost("remove")]
-        public async Task<IActionResult> RemoveFromCart([FromBody] BasketItemDto item)
-        {
-            if (item == null)
-            {
-                return BadRequest(new { message = "Sepetten çıkarmak için geçerli bir ürün bilgisi sağlanmadı." });
-            }
+        //[HttpPost("remove")]
+        //public async Task<IActionResult> RemoveFromCart([FromBody] BasketItemDto item)
+        //{
+        //    if (item == null)
+        //    {
+        //        return BadRequest(new { message = "Sepetten çıkarmak için geçerli bir ürün bilgisi sağlanmadı." });
+        //    }
 
-            var response = await _CartServices.AddCartOrGetCart(item, false);
+        //    var response = await _CartServices.AddCartOrGetCart(item, false);
 
 
-            return Ok(response);
+        //    return Ok(response);
 
-        }
+        //}
 
-        [HttpGet]
-        public async Task<IActionResult> GetList()
-        {
-          var entity=  await _CartServices.GetItemListAsync() ;
+        //[HttpGet]
+        //public async Task<IActionResult> GetList()
+        //{
+        //  var entity=  await _CartServices.GetItemListAsync() ;
 
-            return Ok(entity);
-        }
+        //    return Ok(entity);
+        //}
 
 
     }

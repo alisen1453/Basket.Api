@@ -10,13 +10,9 @@ namespace Basket.Api.Entities.EntityDto
 {
     public class CustomerDto
     {
-       
-        public string Name { get; set; } // Müşterinin adı.
 
-       
-        public string Email { get; set; } // Müşterinin e-posta adresi.
-
-        //public List<Order> Orders { get; set; } // Müşterinin yaptığı siparişler.
-       // public List<BasketCart> Baskets { get; set; } // Müşterinin sahip olduğu sepetler
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
     }
 }

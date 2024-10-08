@@ -11,6 +11,6 @@ namespace Basket.Api.Entities.EntityDto
     {
         public Guid CustomerId { get; set; }
         public Customer? Customer { get; set; }
-        public List<BasketItem>? BasketItems { get; set; }
+        public List<CartItem>? BasketItems { get; set; }
     }
 }

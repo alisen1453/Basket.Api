@@ -8,63 +8,39 @@ using System.Threading.Tasks;
 
 namespace Basket.Api.Access.Context
 {
-    public class BasketDbContext:DbContext
+    public class BasketDbContext : DbContext
     {
-        public BasketDbContext(DbContextOptions<BasketDbContext> options) : base(options)
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+
+        public BasketDbContext(DbContextOptions<BasketDbContext> options)
+            : base(options)
         {
         }
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<BasketItem> BasketItems { get; set; }
-        public DbSet<BasketCart> BasketCarts { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderItem> OrderItems { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Customer>().HasKey(c => c.CostumerId);
+            modelBuilder.Entity<Cart>()
+            .HasOne(c => c.Customer)
+            .WithMany(cu => cu.Carts)
+            .HasForeignKey(c => c.CustomerId);
 
+            // Cart-Item ilişkisi (Bir sepette birçok öğe olabilir)
+            modelBuilder.Entity<CartItem>()
+                .HasOne(i => i.Cart)
+                .WithMany(c => c.CartItems)
+                .HasForeignKey(i => i.CartId);
 
-            modelBuilder.Entity<Product>().HasKey(c => c.ProductId);
-            modelBuilder.Entity<BasketCart>().HasKey(c => c.BasketId);
-            modelBuilder.Entity<BasketItem>().HasKey(c => c.BasketItemId);
-            modelBuilder.Entity<Order>()
-            .Property(o => o.TotalAmount)
-            .HasPrecision(18, 2); // Toplam 18 basamak, virgülden sonra 2 basamak
+          
 
-            modelBuilder.Entity<OrderItem>()
-                .Property(oi => oi.UnitPrice)
-                .HasPrecision(18, 2); // 18 basamak, virgülden sonra 2 basamak
+            modelBuilder.Entity<CartItem>()
+                 .HasOne(ci => ci.Product)          // Her CartItem bir Product'a sahiptir
+                 .WithMany(p => p.CartItems)       // Her Product birçok CartItem'a sahip olabilir
+                 .HasForeignKey(ci => ci.ProductId); // CartItem'daki ProductId dış anahtar olarak
 
-            modelBuilder.Entity<Product>()
-                .Property(p => p.Price)
-                .HasPrecision(18, 2); // 18 basamak, virgülden sonra 2 basamak
-
-            modelBuilder.Entity<Customer>()
-            .HasOne(c => c.Baskets)
-            .WithOne(cart => cart.Customer)
-            .HasForeignKey<BasketCart>(cart => cart.CustomerId);
-
-            // Cart ve CartItem arasındaki bire çok ilişkiyi ayarla
-            modelBuilder.Entity<BasketItem>()
-                .HasOne(ci => ci.BasketCart)
-                .WithMany(c => c.BasketItems)
-                .HasForeignKey(ci => ci.BasketItemId);
-
-            // Product ve CartItem arasındaki bire çok ilişkiyi ayarla
-
-            //modelBuilder.Entity<BasketItem>()
-            //   .HasOne(bi => bi.Product)
-            //   .WithMany()
-            //   .HasForeignKey(bi => bi.ProductId);
-
-            modelBuilder.Entity<BasketItem>()
-                .HasOne(bi => bi.BasketCart)
-                .WithMany(b => b.BasketItems)
-                .HasForeignKey(bi => bi.BasketId); modelBuilder.Entity<Order>();
-
+            base.OnModelCreating(modelBuilder);
         }
-
-
-
     }
 }

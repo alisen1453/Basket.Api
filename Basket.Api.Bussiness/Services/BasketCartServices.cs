@@ -7,6 +7,7 @@ using Basket.Api.Entities.EntityDto;
 using FreeDemoCatalog.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,6 +110,25 @@ namespace Basket.Api.Bussiness.Services
 
             }
 
+        }
+
+        public async Task<Cart> GetItemListAsync(Guid id)
+        {
+            try
+            {
+                var cart = await _cartrepository.GetByIdAsync(id);
+                
+                if (cart == null)
+                {
+                    throw new NotFoundException("Liste Bulunamadı");
+                }
+
+                return  cart;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Sepet öğeleri alınırken bir hata oluştu: {ex.Message}", ex);
+            }
         }
 
     }

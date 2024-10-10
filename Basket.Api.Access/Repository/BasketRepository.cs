@@ -1,10 +1,12 @@
 ﻿using Basket.Api.Access.Context;
 using Basket.Api.Core.Abstract;
+using Basket.Api.Core.Response;
 using Basket.Api.Entities.Entity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -29,38 +31,44 @@ namespace Basket.Api.Access.Repository
         {
           await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
-
-
-
         }
         public async Task AddRangeAsync(IEnumerable<TEntity> entities)
         {
             await _dbSet.AddRangeAsync(entities);
         }
         public async Task UpdateAsync(TEntity entity)
-        {
-            
+        { 
           _dbSet.Update(entity);
             await _context.SaveChangesAsync();
-
         }
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
-        public async Task<TEntity> GetByIdAsync(Guid id)
+        public async Task<TEntity?> GetByIdAsync(Guid id)
         {
+            
           return   await _dbSet.FindAsync(id);
            
+             
         }
+
         public async Task DeleteAsync(Guid id)
         {
             var entity = await _dbSet.FindAsync(id);
-            _dbSet.Remove(entity);
+            if (entity != null)
+            {
+                _dbSet.Remove(entity);
+            }
         }
         public async Task<int> SaveorUpdate()
         {
            return await _context.SaveChangesAsync();
+        }
+
+        public Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return _dbSet.AnyAsync();
         }
     }
 }

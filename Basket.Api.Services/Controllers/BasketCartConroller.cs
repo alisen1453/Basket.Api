@@ -49,13 +49,17 @@ namespace Basket.Api.Services.Controllers
         }
 
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetList()
-        //{
-        //  var entity=  await _CartServices.GetItemListAsync() ;
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetList(Guid id)
+        {
+            var items = await _CartServices.GetItemListAsync(id); 
+            if (items == null)
+            {
+                return NotFound(); 
+            }
 
-        //    return Ok(entity);
-        //}
+            return Ok(items); 
+        }
 
 
     }

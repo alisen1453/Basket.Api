@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Basket.Api.Services.Migrations
+namespace Basket.Services.Migrations
 {
     [DbContext(typeof(BasketDbContext))]
-    [Migration("20241009061915_Mig1")]
+    [Migration("20241015070100_Mig1")]
     partial class Mig1
     {
         /// <inheritdoc />
@@ -20,12 +20,12 @@ namespace Basket.Api.Services.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.8")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Basket.Api.Entities.Entity.Cart", b =>
+            modelBuilder.Entity("Basket.Entities.Entity.Cart", b =>
                 {
                     b.Property<Guid>("CartId")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace Basket.Api.Services.Migrations
                     b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("Basket.Api.Entities.Entity.CartItem", b =>
+            modelBuilder.Entity("Basket.Entities.Entity.CartItem", b =>
                 {
                     b.Property<Guid>("CartItemId")
                         .ValueGeneratedOnAdd()
@@ -66,6 +66,9 @@ namespace Basket.Api.Services.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("CartItemId");
 
                     b.HasIndex("CartId");
@@ -75,7 +78,7 @@ namespace Basket.Api.Services.Migrations
                     b.ToTable("CartItems");
                 });
 
-            modelBuilder.Entity("Basket.Api.Entities.Entity.Customer", b =>
+            modelBuilder.Entity("Basket.Entities.Entity.Customer", b =>
                 {
                     b.Property<Guid>("CustomerId")
                         .ValueGeneratedOnAdd()
@@ -98,7 +101,7 @@ namespace Basket.Api.Services.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("Basket.Api.Entities.Entity.Product", b =>
+            modelBuilder.Entity("Basket.Entities.Entity.Product", b =>
                 {
                     b.Property<Guid>("ProductId")
                         .ValueGeneratedOnAdd()
@@ -123,30 +126,30 @@ namespace Basket.Api.Services.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("Basket.Api.Entities.Entity.Cart", b =>
+            modelBuilder.Entity("Basket.Entities.Entity.Cart", b =>
                 {
-                    b.HasOne("Basket.Api.Entities.Entity.Customer", "Customer")
+                    b.HasOne("Basket.Entities.Entity.Customer", "Customer")
                         .WithMany("Carts")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Basket.Api.Entities.Entity.Customer", null)
+                    b.HasOne("Basket.Entities.Entity.Customer", null)
                         .WithOne("Cart")
-                        .HasForeignKey("Basket.Api.Entities.Entity.Cart", "CustomerId1");
+                        .HasForeignKey("Basket.Entities.Entity.Cart", "CustomerId1");
 
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Basket.Api.Entities.Entity.CartItem", b =>
+            modelBuilder.Entity("Basket.Entities.Entity.CartItem", b =>
                 {
-                    b.HasOne("Basket.Api.Entities.Entity.Cart", "Cart")
+                    b.HasOne("Basket.Entities.Entity.Cart", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Basket.Api.Entities.Entity.Product", "Product")
+                    b.HasOne("Basket.Entities.Entity.Product", "Product")
                         .WithMany("CartItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -157,12 +160,12 @@ namespace Basket.Api.Services.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("Basket.Api.Entities.Entity.Cart", b =>
+            modelBuilder.Entity("Basket.Entities.Entity.Cart", b =>
                 {
                     b.Navigation("CartItems");
                 });
 
-            modelBuilder.Entity("Basket.Api.Entities.Entity.Customer", b =>
+            modelBuilder.Entity("Basket.Entities.Entity.Customer", b =>
                 {
                     b.Navigation("Cart")
                         .IsRequired();
@@ -170,7 +173,7 @@ namespace Basket.Api.Services.Migrations
                     b.Navigation("Carts");
                 });
 
-            modelBuilder.Entity("Basket.Api.Entities.Entity.Product", b =>
+            modelBuilder.Entity("Basket.Entities.Entity.Product", b =>
                 {
                     b.Navigation("CartItems");
                 });

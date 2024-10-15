@@ -1,11 +1,4 @@
 ﻿using Basket.Core.Abstract;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Basket.Entities.Entity
 {
@@ -17,6 +10,7 @@ namespace Basket.Entities.Entity
         public Guid ProductId { get; set; }
         public Cart Cart { get; set; }
         public Product Product { get; set; }
+        public DateTime UpdateTime { get; set; }
 
 
         //public CartItem(Cart cart, Product product, int quantity)

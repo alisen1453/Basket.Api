@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<BasketDbContext>(
     options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectString"),
-        b => b.MigrationsAssembly("Basket.Api.Services")));
+        b => b.MigrationsAssembly("Basket.Services")));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -19,8 +19,8 @@ builder.Services.AddSwaggerGen();
 
 
 //Ýnterface AddScoppe
-builder.Services.AddScoped(typeof(IRepository<>),typeof(BasketRepository<>));
-builder.Services.AddScoped<IBasketCartServices,BasketCartServices>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(BasketRepository<>));
+builder.Services.AddScoped<IBasketCartServices, BasketCartServices>();
 builder.Services.AddScoped<ICustomerServices, CustomerServices>();
 //builder.Services.AddScoped<IBasketItemServices, BasketItemServices>();
 builder.Services.AddScoped<IProductServices, ProductServices>();

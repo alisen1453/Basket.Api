@@ -1,8 +1,6 @@
 ﻿using Basket.Bussiness.Abstract;
 using Basket.Entities.EntityDto;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace Basket.Services.Controllers
 {

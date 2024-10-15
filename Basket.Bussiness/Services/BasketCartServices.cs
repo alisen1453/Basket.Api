@@ -1,18 +1,9 @@
-﻿using Azure;
-using Basket.Bussiness.Abstract;
+﻿using Basket.Bussiness.Abstract;
 using Basket.Core.Abstract;
 using Basket.Core.Response;
 using Basket.Entities.Entity;
 using Basket.Entities.EntityDto;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace Basket.Bussiness.Services
 {
@@ -74,6 +65,7 @@ namespace Basket.Bussiness.Services
                             ProductId = item.ProductId,
                             Quantity = item.Quantity,
                             CartId = entity.CartId,
+                            UpdateTime = DateTime.UtcNow.AddHours(3),
 
                         });
                         await _cartrepository.UpdateAsync(entity);
@@ -111,11 +103,28 @@ namespace Basket.Bussiness.Services
 
         }
 
-        public async Task<Cart> GetItemListAsync(Guid id)
+        public async Task<object> GetItemListAsync(Guid id)
         {
             try
             {
-                var cart = await _cartrepository.GetByIdAsync(id);
+                var cart = await _cartrepository.Query()
+                    .Include(x => x.CartItems)
+                    .ThenInclude(y => y.Product)
+                    .Where(x => x.CustomerId == id)
+                    .Select(x => new
+                    {
+                       
+                     
+                        CartItems = x.CartItems.Select(ci => new
+                        {
+                            ProductName = ci.Product.Name,
+                            ProductPrice = ci.Product.Price,
+                            UpdateTimes=ci.UpdateTime,
+                            ProductTotal = ci.Quantity * ci.Product.Price
+
+                        }).ToList(),
+                    })
+                    .FirstOrDefaultAsync();
 
                 if (cart == null)
                 {
@@ -126,9 +135,10 @@ namespace Basket.Bussiness.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Sepet öğeleri alınırken bir hata oluştu: {ex.Message}", ex);
+                throw new Exception($"Sepet öğeleri alınırken bir hata oluştu..: {ex.Message}", ex);
             }
         }
+
 
     }
 }

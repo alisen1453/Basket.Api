@@ -22,7 +22,7 @@ namespace Basket.Access.Repository
         public async Task AddAsync(TEntity entity)
         {
             await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
+           
         }
         public async Task AddRangeAsync(IEnumerable<TEntity> entities)
         {
@@ -31,13 +31,13 @@ namespace Basket.Access.Repository
         public async Task UpdateAsync(TEntity entity)
         {
             _dbSet.Update(entity);
-            await _context.SaveChangesAsync();
+          
         }
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
-        public async Task<TEntity?> GetByIdAsync(Guid id)
+        public async Task<TEntity> GetByIdAsync(Guid id)
         {
 
             return await _dbSet.FindAsync(id);
@@ -52,6 +52,7 @@ namespace Basket.Access.Repository
             {
                 _dbSet.Remove(entity);
             }
+            
         }
         public async Task<int> SaveorUpdate()
         {

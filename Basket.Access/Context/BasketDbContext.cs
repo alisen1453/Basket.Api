@@ -18,24 +18,23 @@ namespace Basket.Access.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Cart>()
-            .HasOne(c => c.Customer)
-            .WithMany(cu => cu.Carts)
-            .HasForeignKey(c => c.CustomerId);
+                .HasOne(c => c.Customer)    // Navigasyon özelliği
+                .WithMany(cu => cu.Carts)   // Bir müşteri birden fazla sepete sahip
+                .HasForeignKey(c => c.CustomerId);   // İlişkiyi belirtiyoruz
 
-            // Cart-Item ilişkisi (Bir sepette birçok öğe olabilir)
             modelBuilder.Entity<CartItem>()
-                .HasOne(i => i.Cart)
-                .WithMany(c => c.CartItems)
+                .HasOne(i => i.Cart)        // Her CartItem bir Cart'a sahiptir
+                .WithMany(c => c.CartItems) // Bir Cart birçok CartItem'a sahip
                 .HasForeignKey(i => i.CartId);
-            modelBuilder.Entity<Product>().Property(c => c.Price)
-                .HasColumnType("decimal(18,2)");
-
-
 
             modelBuilder.Entity<CartItem>()
-                 .HasOne(ci => ci.Product)          // Her CartItem bir Product'a sahiptir
-                 .WithMany(p => p.CartItems)       // Her Product birçok CartItem'a sahip olabilir
-                 .HasForeignKey(ci => ci.ProductId); // CartItem'daki ProductId dış anahtar olarak
+                .HasOne(ci => ci.Product)    // Her CartItem bir Product'a sahiptir
+                .WithMany(p => p.CartItems)  // Her Product birçok CartItem'a sahip
+                .HasForeignKey(ci => ci.ProductId); // CartItem'daki ProductId dış anahtar olarak
+
+            modelBuilder.Entity<Product>()
+                .Property(c => c.Price)
+                .HasColumnType("decimal(18,2)"); // Fiyatın veri türünü belirliyoruz
 
             base.OnModelCreating(modelBuilder);
         }

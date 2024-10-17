@@ -1,4 +1,4 @@
-﻿namespace Basket.Core.Response
+﻿namespace Basket.Core.Exceptions
 {
     public class NotFoundException : Exception
     {

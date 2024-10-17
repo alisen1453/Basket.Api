@@ -3,9 +3,18 @@ using Basket.Access.Repository;
 using Basket.Bussiness.Abstract;
 using Basket.Bussiness.Services;
 using Basket.Core.Abstract;
+using Basket.Core.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddTransient<ExceptionMiddleware>();
+
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<CustomExceptionFilter>();
+});
+
 
 // Add services to the container.
 builder.Services.AddDbContext<BasketDbContext>(
@@ -33,7 +42,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();

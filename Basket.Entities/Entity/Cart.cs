@@ -1,22 +1,18 @@
 ﻿using Basket.Core.Abstract;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Basket.Entities.Entity
 {
+
+
     public class Cart : IEntity
     {
-        public Guid CartId { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public Guid CustomerId { get; set; }
-        public Customer Customer { get; set; }
-        public List<CartItem> CartItems { get; set; }
+        public Guid CartId { get; set; }     // Sepet ID'si
+        public DateTime CreatedDate { get; set; } // Oluşturulma tarihi
+        public Guid CustomerId { get; set; }  // Müşteri ID'si
 
-        //public Cart(Customer customer)
-        //{
-        //    Customer = customer;
-        //    CreatedDate = DateTime.UtcNow;
-        //    IsCheckedOut = false;
-        //    CartItems = new List<CartItem>();
-        //}
-
+        // İlişkiler
+        public Customer Customer { get; set; } // Bir sepetin bir müşterisi vardır
+        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     }
 }

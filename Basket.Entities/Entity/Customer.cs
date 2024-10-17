@@ -1,25 +1,19 @@
 ﻿using Basket.Core.Abstract;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Basket.Entities.Entity
 {
     public class Customer : IEntity
     {
 
-        public Guid CustomerId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public Cart Cart { get; set; }
-        public List<Cart> Carts { get; set; }
+        public Guid CustomerId { get; set; } // Müşteri ID'si
+        public string Email { get; set; }     // Müşteri e-posta adresi
+        public string FirstName { get; set; } // Müşteri adı
+        public string LastName { get; set; }  // Müşteri soyadı
 
-        //public Customer(string firstName, string lastName, string email)
-        //{
-        //    FirstName = firstName;
-        //    LastName = lastName;
-        //    Email = email;
-        //    Carts = new List<Cart>();
-        //}
+        // İlişki
+        public ICollection<Cart> Carts { get; set; } = new List<Cart>();
+
+
     }
-
-
 }

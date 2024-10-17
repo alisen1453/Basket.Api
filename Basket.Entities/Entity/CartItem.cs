@@ -4,26 +4,15 @@ namespace Basket.Entities.Entity
 {
     public class CartItem : IEntity
     {
-        public Guid CartItemId { get; set; }
-        public int Quantity { get; set; }
-        public Guid CartId { get; set; }
-        public Guid ProductId { get; set; }
-        public Cart Cart { get; set; }
-        public Product Product { get; set; }
-        public DateTime UpdateTime { get; set; }
+        public Guid CartItemId { get; set; } // Sepet öğesi ID'si
+        public Guid CartId { get; set; }      // Sepet ID'si
+        public Guid ProductId { get; set; }   // Ürün ID'si
+        public int Quantity { get; set; }      // Miktar
+        public DateTime UpdateTime { get; set; } // Güncelleme zamanı
 
-
-        //public CartItem(Cart cart, Product product, int quantity)
-        //{
-        //    Cart = cart;
-        //    Product = product;
-        //    Quantity = quantity;
-        //}
-
-        public void UpdateQuantity(int newQuantity)
-        {
-            Quantity = newQuantity;
-        }
+        // İlişkiler
+        public Cart Cart { get; set; }        // Her CartItem bir Cart'a aittir
+        public Product Product { get; set; }   // Her CartItem bir Product'a sahiptir
     }
 }
 

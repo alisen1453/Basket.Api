@@ -16,9 +16,9 @@ namespace Basket.Services.Migrations
                 columns: table => new
                 {
                     CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -46,8 +46,7 @@ namespace Basket.Services.Migrations
                 {
                     CartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CustomerId1 = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    CustomerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -58,11 +57,6 @@ namespace Basket.Services.Migrations
                         principalTable: "Customers",
                         principalColumn: "CustomerId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Carts_Customers_CustomerId1",
-                        column: x => x.CustomerId1,
-                        principalTable: "Customers",
-                        principalColumn: "CustomerId");
                 });
 
             migrationBuilder.CreateTable(
@@ -70,9 +64,9 @@ namespace Basket.Services.Migrations
                 columns: table => new
                 {
                     CartItemId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false),
                     CartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -106,13 +100,6 @@ namespace Basket.Services.Migrations
                 name: "IX_Carts_CustomerId",
                 table: "Carts",
                 column: "CustomerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Carts_CustomerId1",
-                table: "Carts",
-                column: "CustomerId1",
-                unique: true,
-                filter: "[CustomerId1] IS NOT NULL");
         }
 
         /// <inheritdoc />

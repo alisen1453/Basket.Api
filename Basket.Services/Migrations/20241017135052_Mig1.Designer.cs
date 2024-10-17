@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Basket.Services.Migrations
 {
     [DbContext(typeof(BasketDbContext))]
-    [Migration("20241015070100_Mig1")]
+    [Migration("20241017135052_Mig1")]
     partial class Mig1
     {
         /// <inheritdoc />
@@ -37,16 +37,9 @@ namespace Basket.Services.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("CustomerId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("CartId");
 
                     b.HasIndex("CustomerId");
-
-                    b.HasIndex("CustomerId1")
-                        .IsUnique()
-                        .HasFilter("[CustomerId1] IS NOT NULL");
 
                     b.ToTable("Carts");
                 });
@@ -134,10 +127,6 @@ namespace Basket.Services.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Basket.Entities.Entity.Customer", null)
-                        .WithOne("Cart")
-                        .HasForeignKey("Basket.Entities.Entity.Cart", "CustomerId1");
-
                     b.Navigation("Customer");
                 });
 
@@ -167,9 +156,6 @@ namespace Basket.Services.Migrations
 
             modelBuilder.Entity("Basket.Entities.Entity.Customer", b =>
                 {
-                    b.Navigation("Cart")
-                        .IsRequired();
-
                     b.Navigation("Carts");
                 });
 

@@ -1,5 +1,7 @@
-﻿using Basket.Bussiness.Abstract;
+﻿using Basket.Access.Context;
+using Basket.Bussiness.Abstract;
 using Basket.Core.Abstract;
+using Basket.Core.Exceptions;
 using Basket.Core.Response;
 using Basket.Entities.Entity;
 using Basket.Entities.EntityDto;
@@ -13,22 +15,25 @@ namespace Basket.Bussiness.Services
         private readonly IRepository<Customer> _customerrepository;
         private readonly IRepository<CartItem> _Itemrepository;
         private readonly IRepository<Product> _productrepository;
+        private readonly BasketDbContext _context;
 
         public BasketCartServices(IRepository<Cart> cartrepository, IRepository<Customer> customerrepository,
-            IRepository<CartItem> ıtemrepository, IRepository<Product> productrepository)
+            IRepository<CartItem> ıtemrepository, IRepository<Product> productrepository, BasketDbContext context)
         {
             _cartrepository = cartrepository;
             _customerrepository = customerrepository;
             _Itemrepository = ıtemrepository;
             _productrepository = productrepository;
+            _context = context;
         }
 
         public async Task AddCartOrGetCart(BasketItemDto item, bool entry = true)
         {
-            // Müşterinin var olup olmadığını kontrol et
-            //  var customerExists = await _customerrepository.Query().AnyAsync(c => c.CustomerId == item.CustomerId);
-
-
+            var customerExists = await _customerrepository.Query().Where(c => c.CustomerId == item.CustomerId).FirstOrDefaultAsync();
+            if (customerExists == null)
+            {
+                throw new BaseNotFoundException("Kullanıcı Bulunamadı");
+            }
 
             // Mevcut sepeti bul veya yeni bir sepet oluştur
             var entity = await _cartrepository.Query()
@@ -36,109 +41,99 @@ namespace Basket.Bussiness.Services
                 .FirstOrDefaultAsync(x => x.CustomerId == item.CustomerId);
             if (entity == null)
             {
-
                 entity = new Cart { CustomerId = item.CustomerId };
                 await _cartrepository.AddAsync(entity);
-
             }
 
-
-            var product = await _productrepository.Query().AsTracking().
-                FirstOrDefaultAsync(x => x.ProductId == item.ProductId);//Stok kontrolu.
-
+            var product = await _productrepository.Query().AsTracking()
+                .FirstOrDefaultAsync(x => x.ProductId == item.ProductId); // Stok kontrolü
+                if (product?.Stock <= item.Quantity)
+                {
+                    throw new BaseNotFoundException("Stok yetersiz");
+                }
 
             if (product != null)
             {
-
-                var cartitem = entity.CartItems.FirstOrDefault(x => x.ProductId == item.ProductId);
-                if (cartitem == null)
+                var cartItem = entity.CartItems.FirstOrDefault(x => x.ProductId == item.ProductId);
+                if (cartItem == null)
                 {
-                    //product sorgulama
-
-
-                    //CartItem ürün ekeleme.
-                    if (product.Stock <= item.Quantity) { throw new NotFoundException("Stok yetersiz"); }
-                    else
+                    entity.CartItems.Add(new CartItem
                     {
-                        entity.CartItems.Add(new CartItem
-                        {
-                            ProductId = item.ProductId,
-                            Quantity = item.Quantity,
-                            CartId = entity.CartId,
-                            UpdateTime = DateTime.UtcNow.AddHours(3),
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity,
+                        CartId = entity.CartId,
+                        UpdateTime = DateTime.UtcNow.AddHours(3),
+                    });
 
-                        });
-                        await _cartrepository.UpdateAsync(entity);
+                    await _cartrepository.UpdateAsync(entity);
 
-                        product.Stock -= item.Quantity;
-                        await _productrepository.UpdateAsync(product);
-                    }
-
+                    // Stok güncelleme
+                    product.Stock -= item.Quantity;
+                    await _productrepository.UpdateAsync(product);
                 }
                 else
                 {
-
+                    // Mevcut cartItem'i güncelleme
                     if (entry)
                     {
-                        if (product.Stock <= item.Quantity) { throw new NotFoundException("Stok yetersiz"); }
-                        else
+                        if (product.Stock <= item.Quantity)
                         {
-
-                            cartitem.Quantity += item.Quantity;
-                            await _cartrepository.UpdateAsync(entity);
-                            product.Stock -= item.Quantity;
-                            await _productrepository.UpdateAsync(product);
+                            throw new Exception("Stok yetersiz");
                         }
+
+                        cartItem.Quantity += item.Quantity;
+                        await _cartrepository.UpdateAsync(entity);
+
+                        // Stok güncelleme
+                        product.Stock -= item.Quantity;
+                        await _productrepository.UpdateAsync(product);
                     }
                     else
                     {
-                        cartitem.Quantity -= item.Quantity;
+                        cartItem.Quantity -= item.Quantity;
                         await _cartrepository.UpdateAsync(entity);
+
+                        // Stok iade
                         product.Stock += item.Quantity;
                         await _productrepository.UpdateAsync(product);
                     }
                 }
-
+            }
+            else
+            {
+                throw new Exception("Stok bulunamadı.");
             }
 
+            // Tek bir SaveChangesAsync ile tüm işlemleri kaydet
+            await _context.SaveChangesAsync();
         }
 
         public async Task<object> GetItemListAsync(Guid id)
         {
-            try
-            {
-                var cart = await _cartrepository.Query()
-                    .Include(x => x.CartItems)
-                    .ThenInclude(y => y.Product)
-                    .Where(x => x.CustomerId == id)
-                    .Select(x => new
-                    {
-                       
-                     
-                        CartItems = x.CartItems.Select(ci => new
-                        {
-                            ProductName = ci.Product.Name,
-                            ProductPrice = ci.Product.Price,
-                            UpdateTimes=ci.UpdateTime,
-                            ProductTotal = ci.Quantity * ci.Product.Price
 
-                        }).ToList(),
-                    })
-                    .FirstOrDefaultAsync();
-
-                if (cart == null)
+            var cart = await _cartrepository.Query()
+                .Include(x => x.CartItems)
+                .ThenInclude(y => y.Product)
+                .Where(x => x.CustomerId == id)
+                .Select(x => new
                 {
-                    throw new NotFoundException("Liste Bulunamadı");
-                }
+                    CartItems = x.CartItems.Select(ci => new
+                    {
+                        ProductName = ci.Product.Name,
+                        ProductPrice = ci.Product.Price,
+                        UpdateTimes = ci.UpdateTime,
+                        ProductTotal = ci.Quantity * ci.Product.Price
+                    }).ToList(),
+                })
+                .FirstOrDefaultAsync();
 
-                return cart;
-            }
-            catch (Exception ex)
+            if (cart == null)
             {
-                throw new Exception($"Sepet öğeleri alınırken bir hata oluştu..: {ex.Message}", ex);
+                throw new Exception("Liste Bulunamadı");
             }
+
+            return cart;
         }
-
-
     }
 }
+

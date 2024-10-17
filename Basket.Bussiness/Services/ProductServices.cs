@@ -24,6 +24,7 @@ namespace Basket.Bussiness.Services
 
             };
             await _repository.AddAsync(product);
+            await _repository.SaveorUpdate();
 
 
         }

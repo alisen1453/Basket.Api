@@ -21,20 +21,23 @@ namespace Basket.Services.Controllers
         public async Task<IActionResult> AddToCart([FromBody] BasketItemDto item)
         {
 
-            if (item == null)
-            {
-                return BadRequest("Geçersiz sepet öğesi.");
-            }
+            //if (item == null)
+            //{
+            //    return BadRequest("Geçersiz sepet öğesi.");
+            //}
 
-            try
-            {
-                await _CartServices.AddCartOrGetCart(item, true);
-                return Ok(new { message = "Item sepete eklendi.", item });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Sepet ekleme sırasında hata oluştu.", error = ex.Message });
-            }
+            //try
+            //{
+            //    await _CartServices.AddCartOrGetCart(item, true);
+            //    return Ok(new { message = "Item sepete eklendi.", item });
+            //}
+            //catch (Exception ex)
+            //{
+            //    return StatusCode(500, new { message = "Sepet ekleme sırasında hata oluştu.", error = ex.Message });
+            //}
+            await _CartServices.AddCartOrGetCart(item, true);
+            return new OkResult();
+
         }
 
         [HttpPost("Remove")]

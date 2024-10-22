@@ -24,9 +24,10 @@ namespace Basket.Core.Exceptions
                 statusCode = HttpStatusCode.NoContent;
                 message = context.Exception.Message;
             }
+
             if (context.Exception is BaseNotFoundException)
             {
-                statusCode = HttpStatusCode.NotFound;
+                statusCode = (HttpStatusCode)452;
                 message = context.Exception.Message;
             }
             else if (context.Exception is UnauthorizedAccessException)

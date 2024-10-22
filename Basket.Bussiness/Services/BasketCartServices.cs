@@ -29,11 +29,9 @@ namespace Basket.Bussiness.Services
 
         public async Task AddCartOrGetCart(BasketItemDto item, bool entry = true)
         {
-            var customerExists = await _customerrepository.Query().Where(c => c.CustomerId == item.CustomerId).FirstOrDefaultAsync();
-            if (customerExists == null)
-            {
+            var customerExists = await _customerrepository.Query().Where(c => c.CustomerId == item.CustomerId).FirstOrDefaultAsync() ??
                 throw new BaseNotFoundException("Kullanıcı Bulunamadı");
-            }
+
 
             // Mevcut sepeti bul veya yeni bir sepet oluştur
             var entity = await _cartrepository.Query()
@@ -45,12 +43,10 @@ namespace Basket.Bussiness.Services
                 await _cartrepository.AddAsync(entity);
             }
 
-            var product = await _productrepository.Query().AsTracking()
-                .FirstOrDefaultAsync(x => x.ProductId == item.ProductId); // Stok kontrolü
-                if (product?.Stock <= item.Quantity)
-                {
-                    throw new BaseNotFoundException("Stok yetersiz");
-                }
+            var product = await _productrepository.Query().AsTracking().Where(x => x.Stock > 0)
+                .FirstOrDefaultAsync(x => x.ProductId == item.ProductId) ??
+                 throw new BaseNotFoundException("Stok yetersiz");
+
 
             if (product != null)
             {
@@ -99,10 +95,7 @@ namespace Basket.Bussiness.Services
                     }
                 }
             }
-            else
-            {
-                throw new Exception("Stok bulunamadı.");
-            }
+
 
             // Tek bir SaveChangesAsync ile tüm işlemleri kaydet
             await _context.SaveChangesAsync();
@@ -117,7 +110,7 @@ namespace Basket.Bussiness.Services
                 .Where(x => x.CustomerId == id)
                 .Select(x => new
                 {
-                    CartItems = x.CartItems.Select(ci => new
+                    CartItems = x.CartItems.Select(ci => new//cartitem içine girdik.
                     {
                         ProductName = ci.Product.Name,
                         ProductPrice = ci.Product.Price,
@@ -125,14 +118,19 @@ namespace Basket.Bussiness.Services
                         ProductTotal = ci.Quantity * ci.Product.Price
                     }).ToList(),
                 })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync() ??
+                throw new NotFoundException("Liste Bulunamadı");
 
-            if (cart == null)
+
+            var ProductTotal = cart.CartItems.Sum(item => item.ProductTotal);
+
+
+            return new
             {
-                throw new Exception("Liste Bulunamadı");
-            }
-
-            return cart;
+                CartItems1 = cart.CartItems,
+                ProductTotals = ProductTotal,
+                ItemCount = cart.CartItems.Count
+            };
         }
     }
 }
